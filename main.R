@@ -5,8 +5,8 @@ library(base64enc)
 library(png)
 library(ggplot2)
 
-options("tercen.workflowId" = "7132ce367ee5df28fea4032b3f011888")
-options("tercen.stepId"     = "426b00e4-b970-4042-9a53-93a10ac2da90")
+# options("tercen.workflowId" = "7132ce367ee5df28fea4032b3f011888")
+# options("tercen.stepId"     = "426b00e4-b970-4042-9a53-93a10ac2da90")
 
 getValues <- function(ctx){
   values <- list()
@@ -28,34 +28,31 @@ getValues <- function(ctx){
 }
 
 input.par <- list(
-  plot.width = 750,
-  plot.height = 750,
-  jitter = T,
-  log = T,
-  average = "Mean",
-  dot.size = 0.5,
-  error.bar.type = "Standard Deviation",
-  bar.width = 0.5,
-  xlab = "X Values",
-  ylab = "Y Values",
-  title = "My title",
-  subtitle = "My subtitle",
-  caption = "My caption"
+  plot.width   = ctx$op.value("plot.width", type = as.double, default = 750),
+  plot.height  = ctx$op.value("plot.height", type = as.double, default = 750),
+  jitter       = ctx$op.value("jitter", type = as.logical, default = FALSE),
+  average.type = ctx$op.value("average.type", type = as.character, default = "Mean"),
+  dot.size     = ctx$op.value("dot.size", type = as.double, default = 0.5),
+  error.type   = ctx$op.value("error.type", type = as.character, default = "Standard Deviation"),
+  bar.width    = ctx$op.value("bar.width", type = as.double, default = 0.25),
+  xlab         = ctx$op.value("xlab", type = as.character, default = ""),
+  ylab         = ctx$op.value("ylab", type = as.character, default = ""),
+  title        = ctx$op.value("title", type = as.character, default = ""),
+  subtitle     = ctx$op.value("subtitle", type = as.character, default = ""),
+  caption      = ctx$op.value("caption", type = as.character, default = "")
 )
 
 ctx <- tercenCtx()
 df <- getValues(ctx)
 
-if(input.par$log) df$.y <- log1p(df$.y)
-
-if(input.par$average == "Mean") {
+if(input.par$average.type == "Mean") {
   df_agg <- df %>%
     group_by_at(vars(-.y)) %>%
     summarise(mn = mean(.y, na.rm = TRUE),
               n = n(),
               stdv = sd(.y, na.rm = TRUE))
 }
-if(input.par$average == "Median") {
+if(input.par$average.type == "Median") {
   df_agg <- df %>%
     group_by_at(vars(-.y)) %>%
     summarise(mn = median(.y, na.rm = TRUE),
@@ -64,8 +61,10 @@ if(input.par$average == "Median") {
 }
 
 fill.col <- NULL
-if(length(unlist(ctx$colors)) > 0) fill.col <- unlist(ctx$colors)
-x.axis <- NULL
+if(length(ctx$colors) > 0) {
+  fill.col <- unlist(ctx$colors)
+} 
+
 if(!ctx$hasXAxis) {
   df_agg$.x <- ""
   df$.x <- ""
@@ -86,15 +85,17 @@ plt <- ggplot(df_agg, aes_string(x = ".x", y = "mn", fill = fill.col)) +
   )
 
 ### Add jitter
-plt <- plt + geom_jitter(
-  data = df,
-  aes_string(x = ".x", y = ".y", fill = fill.col),
-  size = input.par$dot.size,
-  position = position_jitterdodge(jitter.width = 0.1, dodge.width = 0.9)
-)
+if(input.par$jitter) {
+  plt <- plt + geom_jitter(
+    data = df,
+    aes_string(x = ".x", y = ".y", fill = fill.col),
+    size = input.par$dot.size,
+    position = position_jitterdodge(jitter.width = 0.1, dodge.width = 0.9)
+  )
+}
 
 ### Add SD bars
-if(input.par$error.bar.type == "Standard Deviation") {
+if(input.par$error.type == "Standard Deviation") {
   plt <- plt + geom_errorbar(
     aes(ymin = mn - stdv, ymax = mn + stdv),
     width = input.par$bar.width,

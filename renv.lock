@@ -290,10 +290,27 @@
     },
     "tercen": {
       "Package": "tercen",
-      "Version": "0.10.8",
-      "Source": "Repository",
-      "Repository": "TERCEN",
-      "Hash": "7676dd098faf9b2267411f8f129f5d8b"
+      "Version": "0.12.1",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "teRcen",
+      "RemoteUsername": "tercen",
+      "RemoteRef": "0.12.1",
+      "RemoteSha": "69577b727b1357d2c60632847cd1d7c25a9f6011",
+      "Hash": "e35af8d85ff3238d96341f5aa9d09182"
+    },
+    "tercenApi": {
+      "Package": "tercenApi",
+      "Version": "0.12.2",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "teRcenApi",
+      "RemoteUsername": "tercen",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "7f1274676d90681341833c289688e80f45c2638f",
+      "Hash": "4cae4831bfaadb584e4c2fcc80f53768"
     },
     "tibble": {
       "Package": "tibble",

@@ -1,4 +1,5 @@
 library(tercen)
+library(tercenApi)
 library(dplyr, warn.conflicts = FALSE)
 library(base64enc)
 library(png)
@@ -127,23 +128,12 @@ output_string <- base64enc::base64encode(
   "txt"
 )
 
-df_out <- tibble::tibble(
+tibble::tibble(
   filename = "test",
   mimetype = "image/png",
   .content = output_string
 ) %>%
-  ctx$addNamespace()
-
-table = tercen::dataframe.as.table(df_out) 
-
-relation = SimpleRelation$new()
-relation$id = table$properties$name
-
-join = JoinOperator$new()
-join$rightRelation = relation
-
-result = OperatorResult$new()
-result$tables = list(table)
-result$joinOperators = list(join)
-
-ctx$save(result)
+  ctx$addNamespace() %>%
+  as_relation() %>%
+  as_join_operator(list(), list()) %>%
+  save_relation(ctx)

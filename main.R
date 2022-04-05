@@ -127,10 +127,23 @@ output_string <- base64enc::base64encode(
   "txt"
 )
 
-tibble::tibble(
+df_out <- tibble::tibble(
   filename = "test",
   mimetype = "image/png",
   .content = output_string
 ) %>%
-  ctx$addNamespace() %>%
-  ctx$save()
+  ctx$addNamespace()
+
+table = tercen::dataframe.as.table(df_out) 
+
+relation = SimpleRelation$new()
+relation$id = table$properties$name
+
+join = JoinOperator$new()
+join$rightRelation = relation
+
+result = OperatorResult$new()
+result$tables = list(table)
+result$joinOperators = list(join)
+
+ctx$save(result)

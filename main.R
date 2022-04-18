@@ -4,9 +4,12 @@ library(dplyr, warn.conflicts = FALSE)
 library(base64enc)
 library(png)
 library(ggplot2)
+library(uuid)
 
-# options("tercen.workflowId" = "7132ce367ee5df28fea4032b3f011888")
-# options("tercen.stepId"     = "426b00e4-b970-4042-9a53-93a10ac2da90")
+# http://127.0.0.1:5400/test-team/w/deb5dcd8ad7dd04981215eca2401449b/ds/6db1d2ad-ff91-4fe3-a9a7-2fecd3316666
+# options("tercen.workflowId" = "deb5dcd8ad7dd04981215eca2401449b")
+# options("tercen.stepId"     = "6db1d2ad-ff91-4fe3-a9a7-2fecd3316666")
+# options("tercen.serviceUri"="http://172.17.0.1:5400/api/v1/")
 
 getValues <- function(ctx){
   values <- list()
@@ -140,3 +143,4 @@ tibble::tibble(
   as_relation() %>%
   as_join_operator(list(), list()) %>%
   save_relation(ctx)
+

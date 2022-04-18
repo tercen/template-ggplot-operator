@@ -27,6 +27,8 @@ getValues <- function(ctx){
   return(data)
 }
 
+ctx <- tercenCtx()
+
 input.par <- list(
   plot.width   = ctx$op.value("plot.width", type = as.double, default = 750),
   plot.height  = ctx$op.value("plot.height", type = as.double, default = 750),
@@ -42,7 +44,7 @@ input.par <- list(
   caption      = ctx$op.value("caption", type = as.character, default = "")
 )
 
-ctx <- tercenCtx()
+
 df <- getValues(ctx)
 
 if(input.par$average.type == "Mean") {

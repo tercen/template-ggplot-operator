@@ -5,6 +5,16 @@
   "authors": ["tercen"],
   "urls": ["https://github.com/tercen/barplot_operator"],
   "properties": [
+      {
+    "kind": "EnumeratedProperty",
+    "name": "format",
+    "defaultValue": "image/svg+xml",
+    "values": [
+      "image/png",
+      "image/svg+xml"
+    ],
+    "description": "Indicates which format to use."
+  },
   {
     "kind": "DoubleProperty",
     "name": "plot.width",

@@ -5,6 +5,9 @@ library(base64enc)
 library(png)
 library(ggplot2)
 library(uuid)
+library(svglite)
+
+
 
 # http://127.0.0.1:5400/test-team/w/deb5dcd8ad7dd04981215eca2401449b/ds/6db1d2ad-ff91-4fe3-a9a7-2fecd3316666
 # options("tercen.workflowId" = "deb5dcd8ad7dd04981215eca2401449b")
@@ -22,7 +25,7 @@ getValues <- function(ctx){
   rnames <- ctx$rselect() 
   rnames$.ri <- seq_len(nrow(rnames)) - 1
   data <- left_join(data, rnames, by = ".ri")
-
+  
   cnames <- ctx$cselect()
   cnames$.ci <- seq_len(nrow(cnames)) - 1
   data <- left_join(data, cnames, by = ".ci")
@@ -31,6 +34,8 @@ getValues <- function(ctx){
 }
 
 ctx <- tercenCtx()
+
+mimetype = ctx$op.value("format", type = as.character, default = "image/svg+xml")
 
 input.par <- list(
   plot.width   = ctx$op.value("plot.width", type = as.double, default = 750),
@@ -109,7 +114,7 @@ if(input.par$error.type == "Standard Deviation") {
 }
 
 ### Annotate with sample size
-  
+
 ### Facets based on rows and columns
 cnames <- unlist(ctx$cnames)
 if(ctx$cnames[[1]] == "") cnames <- "."
@@ -123,11 +128,28 @@ plt <- plt + facet_grid(
     paste(cnames, collapse = "+")
   ))
 )
-  
-tmp <- tempfile(fileext = ".png")
-png(tmp, width = input.par$plot.width, height = input.par$plot.height, unit = "px")
-plot(plt)
-dev.off()
+
+# mimetype = 'image/png'
+# mimetype = 'image/svg+xml'
+
+if (mimetype == 'image/png'){
+  tmp <- tempfile(fileext = ".png")
+  png(tmp, width = input.par$plot.width, height = input.par$plot.height, unit = "px")
+  plot(plt)
+  dev.off()
+} else if (mimetype == 'image/svg+xml'){
+  tmp <- tempfile(fileext = ".svg")
+  # SVG sizes are in inches, not pixels
+  res <- 144
+  svglite(tmp, width = input.par$plot.width/res, height = input.par$plot.height/res)
+  # ggplot(plt) 
+  plot(plt)
+  dev.off()
+} else {
+  stop("bad mimetype")
+}
+
+
 
 output_string <- base64enc::base64encode(
   readBin(tmp, "raw", file.info(tmp)[1, "size"]),
@@ -136,7 +158,7 @@ output_string <- base64enc::base64encode(
 
 tibble::tibble(
   filename = "test",
-  mimetype = "image/png",
+  mimetype = mimetype,
   .content = output_string
 ) %>%
   ctx$addNamespace() %>%

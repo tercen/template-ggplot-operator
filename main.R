@@ -156,10 +156,12 @@ output_string <- base64enc::base64encode(
   "txt"
 )
 
+output_md <- base64enc::base64encode(charToRaw("# Box plot\n\n Some text ..."),"txt")
+
 tibble::tibble(
-  filename = "test",
-  mimetype = mimetype,
-  .content = output_string
+  filename = c("markdown", "svg"),
+  mimetype = c("text/markdown", mimetype),
+  .content = c(output_md,output_string)
 ) %>%
   ctx$addNamespace() %>%
   as_relation() %>%

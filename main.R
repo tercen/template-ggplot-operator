@@ -7,13 +7,6 @@ library(ggplot2)
 library(uuid)
 library(svglite)
 
-
-
-# http://127.0.0.1:5400/test-team/w/deb5dcd8ad7dd04981215eca2401449b/ds/6db1d2ad-ff91-4fe3-a9a7-2fecd3316666
-# options("tercen.workflowId" = "deb5dcd8ad7dd04981215eca2401449b")
-# options("tercen.stepId"     = "6db1d2ad-ff91-4fe3-a9a7-2fecd3316666")
-# options("tercen.serviceUri"="http://172.17.0.1:5400/api/v1/")
-
 getValues <- function(ctx){
   values <- list()
   
@@ -113,8 +106,6 @@ if(input.par$error.type == "Standard Deviation") {
   )
 }
 
-### Annotate with sample size
-
 ### Facets based on rows and columns
 cnames <- unlist(ctx$cnames)
 if(ctx$cnames[[1]] == "") cnames <- "."
@@ -128,9 +119,6 @@ plt <- plt + facet_grid(
     paste(cnames, collapse = "+")
   ))
 )
-
-# mimetype = 'image/png'
-# mimetype = 'image/svg+xml'
 
 if (mimetype == 'image/png'){
   tmp <- tempfile(fileext = ".png")
@@ -146,17 +134,17 @@ if (mimetype == 'image/png'){
   plot(plt)
   dev.off()
 } else {
-  stop("bad mimetype")
+  stop("Bad mimetype")
 }
-
-
 
 output_string <- base64enc::base64encode(
   readBin(tmp, "raw", file.info(tmp)[1, "size"]),
   "txt"
 )
 
-output_md <- base64enc::base64encode(charToRaw("# Box plot\n\n Some text ..."),"txt")
+#checksum <- as.vector(tools::md5sum(tmp))
+
+output_md <- base64enc::base64encode(charToRaw("# Bar plot\n\n This is a bar plot generated in Tercen."),"txt")
 
 tibble::tibble(
   filename = c("markdown", "svg"),
@@ -167,4 +155,3 @@ tibble::tibble(
   as_relation() %>%
   as_join_operator(list(), list()) %>%
   save_relation(ctx)
-

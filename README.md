@@ -1,8 +1,8 @@
-# Barplot operator
+# Template ggplot operator
 
 ##### Description
 
-The barplot operator generates a barplot image based on the input projection.
+The template ggplot operator demonstrates how to generate a barplot image and markdown components based on the input projection.
 
 ##### Usage
 
@@ -25,4 +25,3 @@ Output relations|.
 ##### Details
 
 The computation is based on the `ggplot2` R package.
-
